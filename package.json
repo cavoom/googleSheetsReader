@@ -9,6 +9,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "aws-sdk": "^2.1082.0",
     "public-google-sheets-parser": "^1.2.6"
   }
 }
