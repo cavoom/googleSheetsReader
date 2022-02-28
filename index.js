@@ -41,6 +41,7 @@ parser.parse().then((items) => {
   buildIt(items,(theBigArray)=>{
     console.log('here is the array to build params',theBigArray.length);
     console.log('an item:', theBigArray[0].PutRequest.Item.id);
+    console.log('full item', theBigArray[0].PutRequest.Item);
 
     callback(null, params);
 
@@ -75,17 +76,27 @@ function buildIt(items, callback){
   var tempObject = {};
   numRecords = items.length;
   //console.log('number of items: ', numRecords);
+  
   // ********************** STOPPED HERE *****************************
   // we need to finish building theBigArray which will be added to the 
   // params object before being pushed to Dynamo
   // See "batchwrite.js in DynamoTables script"
+  // maybe change "uniqueID" field in spreadsheet to "id" to make simple?
+  // ********************** STOPPED HERE *****************************
+
+
   for(i=0;i<numRecords;i++){
     tempObject = {
       PutRequest: {
         Item: {
           "id": { "S": items[i].uniqueID},
             "order": { "N": items[i].order },
-            "campaignName": { "S": items[i].campaignName}
+            "campaignName": { "S": items[i].campaignName},
+            "questionFromAlexa" : {S : items[i].questionFromAlexa},
+            "userResponse" : {S : items[i].userResponse},
+            "answerFromAlexa" : {S : items[i].answerFromAlexa},
+            "notes" : {S : items[i].notes}
+
         }
       }
     } // tempObject
