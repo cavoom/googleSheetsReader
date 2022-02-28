@@ -75,6 +75,10 @@ function buildIt(items, callback){
   var tempObject = {};
   numRecords = items.length;
   //console.log('number of items: ', numRecords);
+  // ********************** STOPPED HERE *****************************
+  // we need to finish building theBigArray which will be added to the 
+  // params object before being pushed to Dynamo
+  // See "batchwrite.js in DynamoTables script"
   for(i=0;i<numRecords;i++){
     tempObject = {
       PutRequest: {
