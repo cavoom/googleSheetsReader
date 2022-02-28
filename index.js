@@ -39,13 +39,20 @@ parser.parse().then((items) => {
   // Call function to build params here
   // then nest analytics call underneith
   buildIt(items,(theBigArray)=>{
-    console.log('here is the array to build params',theBigArray.length);
-    console.log('an item:', theBigArray[0].PutRequest.Item.id);
-    console.log('full item', theBigArray[0].PutRequest.Item);
+    //console.log('here is the array to build params',theBigArray.length);
+    //console.log('an item:', theBigArray[0].PutRequest.Item.id);
+    //console.log('full item', theBigArray[0].PutRequest.Item);
+
+    // Now build params
+    params = {
+      RequestItems: {
+        "admr_questions" : theBigArray
+      }
+    }
 
     callback(null, params);
 
-
+  // Now send to DynamoDB for save
   // analytics(items, (stuff)=>{
   //   //console.log('all done analytics with:',stuff);
   //   callback(null, items);
