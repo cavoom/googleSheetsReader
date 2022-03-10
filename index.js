@@ -92,7 +92,7 @@ function buildIt(items, callback){
   for(i=0;i<numRecords;i++){
     // If null values
     if(!items[i].uniqueID){
-      items[i].uniqueID == "no input"};
+      items[i].uniqueID = "no input"};
       
     if(!items[i].order){
       items[i].order = 'no input'};
@@ -109,8 +109,11 @@ function buildIt(items, callback){
     if(!items[i].answerFromAlexa){
       items[i].answerFromAlexa = "no input"};
 
-      if(!items[i].uniqueID){
-        items[i].uniqueID = "no input"};
+      if(!items[i].personalization){
+        items[i].personalization = "no input"};
+
+      if(!items[i].notes){
+        items[i].notes = "no input"};
 
 
     // If no null values
@@ -122,6 +125,7 @@ function buildIt(items, callback){
             "campaignName": { S: items[i].campaignName.toString()},
             "questionFromAlexa" : {S : items[i].questionFromAlexa.toString()},
             "userResponse" : {S : items[i].userResponse.toString()},
+            "personalization" : {S : items[i].personalization.toString()},
             "answerFromAlexa" : {S : items[i].answerFromAlexa.toString()},
             "notes" : {S : items[i].notes.toString()}
 
