@@ -48,7 +48,7 @@ parser.parse().then((items) => {
     // FOR TEST
     //console.log('PARAMS: ',params);
     // console.log('Record to find: ', params.RequestItems.admr_questions[0].PutRequest.Item.id.N);
-    // callback(null, 'all done');
+    //callback(null, 'all done');
 
   // Now send to DynamoDB for save
   analytics(items, (stuff)=>{
@@ -95,24 +95,22 @@ function buildIt(items, callback){
       items[i].uniqueID == "no input"};
       
     if(!items[i].order){
-        items[i].order == "no input"};
+      items[i].order = 'no input'};
         
     if(!items[i].campaignName){
-        items[i].campaignName == "no input"};
+        items[i].campaignName = "no input"};
 
     if(!items[i].questionFromAlexa){
-        items[i].questionFromAlexa == "no input"};
+        items[i].questionFromAlexa = "no input"};
 
     if(!items[i].userResponse){
-        items[i].userResponse == "no input"};
+        items[i].userResponse = "no input"};
     
     if(!items[i].answerFromAlexa){
-      items[i].answerFromAlexa == "no input"};
+      items[i].answerFromAlexa = "no input"};
 
       if(!items[i].uniqueID){
-        items[i].uniqueID == "no input"};
-
-
+        items[i].uniqueID = "no input"};
 
 
     // If no null values
@@ -120,17 +118,17 @@ function buildIt(items, callback){
       PutRequest: {
         Item: {
           "id": { S: items[i].uniqueID.toString()},
-            "order": { S: items[i].order.toString() },
+            "order": { S: items[i].order.toString()},
             "campaignName": { S: items[i].campaignName.toString()},
             "questionFromAlexa" : {S : items[i].questionFromAlexa.toString()},
             "userResponse" : {S : items[i].userResponse.toString()},
             "answerFromAlexa" : {S : items[i].answerFromAlexa.toString()},
             "notes" : {S : items[i].notes.toString()}
 
-        }
-      }
+        } // Item
+      } // PutRequest
     } // tempObject
-    //} // else
+
 
     theBigArray.push(tempObject);
     } // for loop
