@@ -1,8 +1,10 @@
 // This script reads a shared Google Sheet
 // Stores the data into DynamoDB
+// To run it, go to Terminal and run: source runTemplates
 
 const PublicGoogleSheetsParser = require('public-google-sheets-parser')
-const spreadsheetId = '1aH5dtvYAYwxPML8keeznPeWSAdcT9kgzwlK6bRKWUsI';
+//const spreadsheetId = '1aH5dtvYAYwxPML8keeznPeWSAdcT9kgzwlK6bRKWUsI'; //ADMR Templates File
+const spreadsheetId = '1aH5dtvYAYwxPML8keeznPeWSAdcT9kgzwlK6bRKWUsI'; // admrCMS File
 //var testerArray = [];
 
 // DYNAMO Setup
@@ -33,11 +35,8 @@ parser.parse().then((items) => {
   // Call function to build params here
   // then nest analytics call underneith
   buildIt(items,(theBigArray)=>{
-    //console.log('here is the array to build params',theBigArray.length);
     //console.log('an item:', theBigArray[0].PutRequest.Item.id);
-    //console.log('full item', theBigArray[0].PutRequest.Item);
-    //console.log('The Big Array ... ', theBigArray);
-
+  
     // Now build params for DynamoDB Batch upload
     params = {
       RequestItems: {
@@ -90,8 +89,10 @@ function buildIt(items, callback){
   //console.log('number of items: ', numRecords);
 
   for(i=0;i<numRecords;i++){
-    // If null values
+
     if(!items[i].uniqueID){
+         
+    // Get a new timestamp and use that if no ID listed
       items[i].uniqueID = "no input"};
       
     if(!items[i].order){
@@ -109,8 +110,8 @@ function buildIt(items, callback){
     if(!items[i].answerFromAlexa){
       items[i].answerFromAlexa = "no input"};
 
-      if(!items[i].personalization){
-        items[i].personalization = "no input"};
+    if(!items[i].campaignNumber){
+      items[i].campaignNumber = "no input"};
 
       if(!items[i].notes){
         items[i].notes = "no input"};
@@ -125,7 +126,7 @@ function buildIt(items, callback){
             "campaignName": { S: items[i].campaignName.toString()},
             "questionFromAlexa" : {S : items[i].questionFromAlexa.toString()},
             "userResponse" : {S : items[i].userResponse.toString()},
-            "personalization" : {S : items[i].personalization.toString()},
+            "campaignNumber" : {S : items[i].campaignNumber.toString()},
             "answerFromAlexa" : {S : items[i].answerFromAlexa.toString()},
             "notes" : {S : items[i].notes.toString()}
 
