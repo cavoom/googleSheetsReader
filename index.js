@@ -1,6 +1,8 @@
 // This script reads a shared Google Sheet
 // Stores the data into DynamoDB
-// To run it, go to Terminal and run: source runTemplates
+// Use this one - not source runTemplates
+
+// OLD FOR LAMBDA:  To run it, go to Terminal and run: source runTemplates
 
 const PublicGoogleSheetsParser = require('public-google-sheets-parser')
 //const spreadsheetId = '1aH5dtvYAYwxPML8keeznPeWSAdcT9kgzwlK6bRKWUsI'; //ADMR Templates File
@@ -35,7 +37,8 @@ parser.parse().then((items) => {
   // Call function to build params here
   // then nest analytics call underneith
   buildIt(items,(theBigArray)=>{
-    //console.log('an item:', theBigArray[0].PutRequest.Item.id);
+    console.log('an item:', theBigArray[0].PutRequest.Item.id);
+    console.log('length:',theBigArray.length);
   
     // Now build params for DynamoDB Batch upload
     params = {
@@ -137,6 +140,7 @@ function buildIt(items, callback){
 
     theBigArray.push(tempObject);
     } // for loop
+    console.log('the big array: ',theBigArray.length);
     callback(theBigArray);
     //callback(params)
   }

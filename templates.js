@@ -3,8 +3,10 @@
 // Stores the data into DynamoDB
 
 const PublicGoogleSheetsParser = require('public-google-sheets-parser')
-const spreadsheetId = '1L6nyjS7H3GNXhoS8yr7BgxD-mscso1joUC4zjJ3q2ig';
+const spreadsheetId = '1aH5dtvYAYwxPML8keeznPeWSAdcT9kgzwlK6bRKWUsI'; // Pulls from the Google Sheet: admrCMS
+//const spreadsheetId = '1L6nyjS7H3GNXhoS8yr7BgxD-mscso1joUC4zjJ3q2ig' // ADMR Templates file
 //var testerArray = [];
+// https://docs.google.com/spreadsheets/d/1aH5dtvYAYwxPML8keeznPeWSAdcT9kgzwlK6bRKWUsI/edit?usp=sharing
 
 // DYNAMO Setup
 var AWS = require('aws-sdk');
@@ -21,11 +23,10 @@ var params = {};
 var numRecords = 0;
 var theBigArray = [];
 
-
+console.log('going to exports.handler');
 // This is the lambda function
 exports.handler = function(event, context, callback) {
   // 1. You can pass spreadsheetId when parser instantiation
-
 
 const parser = new PublicGoogleSheetsParser(spreadsheetId)
 parser.parse().then((items) => {
@@ -36,9 +37,9 @@ parser.parse().then((items) => {
   // Call function to build params here
   // then nest analytics call underneith
   buildIt(items,(theBigArray)=>{
-    //console.log('here is the array to build params',theBigArray.length);
-    //console.log('an item:', theBigArray[0].PutRequest.Item.id);
-    //console.log('full item', theBigArray[0].PutRequest.Item);
+    // console.log('here is the array to build params',theBigArray.length);
+    // console.log('an item:', theBigArray[0].PutRequest.Item.id);
+    // console.log('full item', theBigArray[0].PutRequest.Item);
     //console.log('The Big Array ... ', theBigArray);
 
     // Now build params for DynamoDB Batch upload
@@ -50,7 +51,9 @@ parser.parse().then((items) => {
 
     // FOR TEST
     //console.log('PARAMS: ',params);
-    // console.log('Record to find: ', params.RequestItems.admr_questions[0].PutRequest.Item.id.N);
+
+    // console.log('Record to find: ', params.RequestItems.admr_questions[25].PutRequest.Item);
+    console.log(theBigArray.length);
     //callback(null, 'all done');
 
   // Now send to DynamoDB for save
@@ -92,21 +95,34 @@ function buildIt(items, callback){
   numRecords = items.length;
   //console.log('number of items: ', numRecords);
 
-  for(i=0;i<numRecords;i++){
-    // If null values
+  for(i=326;i<348;i++){
+
+
     if(!items[i].uniqueID){
+         
+    // Get a new timestamp and use that if no ID listed
       items[i].uniqueID = "no input"};
       
-    if(!items[i].campaign){
-      items[i].campaign = 'no input'};
+    if(!items[i].order){
+      items[i].order = 'no input'};
         
-    if(!items[i].user_response){
-        items[i].user_response = "no input"};
+    if(!items[i].campaignName){
+        items[i].campaignName = "no input"};
 
-    if(!items[i].assistant_response){
-        items[i].assistant_response = "no input"};
+    if(!items[i].questionFromAlexa){
+        items[i].questionFromAlexa = "no input"};
+
+    if(!items[i].userResponse){
+        items[i].userResponse = "no input"};
     
+    if(!items[i].answerFromAlexa){
+      items[i].answerFromAlexa = "no input"};
 
+    if(!items[i].campaignNumber){
+      items[i].campaignNumber = "no input"};
+
+      if(!items[i].notes){
+        items[i].notes = "no input"};
 
 
     // If no null values
@@ -114,9 +130,13 @@ function buildIt(items, callback){
       PutRequest: {
         Item: {
           "id": { S: items[i].uniqueID.toString()},
-            "campaign": { S: items[i].campaign.toString()},
-            "user_response" : {S : items[i].user_response.toString()},
-            "assistant_response" : {S : items[i].assistant_response.toString()}
+            "order": { S: items[i].order.toString()},
+            "campaignName": { S: items[i].campaignName.toString()},
+            "questionFromAlexa" : {S : items[i].questionFromAlexa.toString()},
+            "userResponse" : {S : items[i].userResponse.toString()},
+            "campaignNumber" : {S : items[i].campaignNumber.toString()},
+            "answerFromAlexa" : {S : items[i].answerFromAlexa.toString()},
+            "notes" : {S : items[i].notes.toString()}
         
 
         } // Item
