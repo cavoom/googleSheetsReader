@@ -1,6 +1,7 @@
 // This one reads from ADMR templates google sheet and saves to Dynamo
 // This script reads a shared Google Sheet
 // Stores the data into DynamoDB
+// Go to line 98 to do 25 (max right now, at a time)
 
 const PublicGoogleSheetsParser = require('public-google-sheets-parser')
 const spreadsheetId = '1aH5dtvYAYwxPML8keeznPeWSAdcT9kgzwlK6bRKWUsI'; // Pulls from the Google Sheet: admrCMS
@@ -15,15 +16,10 @@ AWS.config.update({region: 'us-east-1'});
 
 // Create the DynamoDB service object
 var ddb = new AWS.DynamoDB({apiVersion: '2012-08-10'});
-
-// Call a function to build params
-// Define as an empty object here
-// Then redefine
 var params = {};
 var numRecords = 0;
 var theBigArray = [];
 
-console.log('going to exports.handler');
 // This is the lambda function
 exports.handler = function(event, context, callback) {
   // 1. You can pass spreadsheetId when parser instantiation
@@ -31,17 +27,11 @@ exports.handler = function(event, context, callback) {
 const parser = new PublicGoogleSheetsParser(spreadsheetId)
 parser.parse().then((items) => {
   // Now that we have the items, call buildIt function to put them into an array
-  // numRecords = items.length;
-  //console.log('camp name of 0:', items[0].campaignName);
   
   // Call function to build params here
   // then nest analytics call underneith
   buildIt(items,(theBigArray)=>{
-    // console.log('here is the array to build params',theBigArray.length);
-    // console.log('an item:', theBigArray[0].PutRequest.Item.id);
     // console.log('full item', theBigArray[0].PutRequest.Item);
-    //console.log('The Big Array ... ', theBigArray);
-
     // Now build params for DynamoDB Batch upload
     params = {
       RequestItems: {
@@ -49,21 +39,11 @@ parser.parse().then((items) => {
       }
     }
 
-    // FOR TEST
-    //console.log('PARAMS: ',params);
-
-    // console.log('Record to find: ', params.RequestItems.admr_questions[25].PutRequest.Item);
-    console.log(theBigArray.length);
-    //callback(null, 'all done');
-
-  // Now send to DynamoDB for save
-  analytics(items, (stuff)=>{
-    console.log('all done analytics with:',stuff);
-    callback(null, stuff);
-        });
-
-  // FOR TEST
-  // callback(null,'all done');
+    // Now send to DynamoDB for save
+    analytics(items, (stuff)=>{
+      console.log('all done analytics with:',stuff);
+      callback(null, stuff);
+          }); // end analytics
 
 })  // end builtIt
 }) // end parser
@@ -95,7 +75,7 @@ function buildIt(items, callback){
   numRecords = items.length;
   //console.log('number of items: ', numRecords);
 
-  for(i=326;i<348;i++){
+  for(i=340;i<351;i++){
 
 
     if(!items[i].uniqueID){
