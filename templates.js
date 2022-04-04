@@ -28,6 +28,8 @@ const parser = new PublicGoogleSheetsParser(spreadsheetId)
 parser.parse().then((items) => {
   // Now that we have the items, call buildIt function to put them into an array
   
+
+  // Put the new routine here to chunk it out
   // Call function to build params here
   // then nest analytics call underneith
   buildIt(items,(theBigArray)=>{
@@ -46,10 +48,10 @@ parser.parse().then((items) => {
           }); // end analytics
 
 })  // end builtIt
-}) // end parser
+}) // end google sheet parser
 
 
-}
+} // end handler
 
 // DYNAMO Batchwrite function
 function analytics(items, callback){
@@ -63,7 +65,6 @@ ddb.batchWriteItem(params, function(err, data) {
     callback(data)
     }
   })
-
 //callback(data)
 }
 
@@ -73,10 +74,9 @@ function buildIt(items, callback){
   var i = 0;
   var tempObject = {};
   numRecords = items.length;
-  //console.log('number of items: ', numRecords);
+  console.log('number of items: ', numRecords);
 
-  for(i=340;i<351;i++){
-
+  for(i=340;i<348;i++){
 
     if(!items[i].uniqueID){
          
