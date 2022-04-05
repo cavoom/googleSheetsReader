@@ -40,18 +40,19 @@ parser.parse().then((items) => {
     //console.log('full item', theBigArray[0].PutRequest.Item);
     //console.log('the big Array in build it: ',theBigArray.length);
     // Now build params for DynamoDB Batch upload
-    params = {
-      RequestItems: {
+    // params = {
+    //   RequestItems: {
+    //     "admr_questions" : theBigArray
+    //             } // endRequestItems
+    //         } // end params
+
 
         // $$$$$$$$$$ NEED TO SLICE THE BIGARRY HERE $$$$$$$$$$
-        // and then send params with the slice
+        // and then send params with the SLICE
         // don't worry about sending startWith, endWith - just sent params
         // var chunkToSend = theBigArray.slice(startWith,endWith)
         // will include start with, will not include endWith
-
-        "admr_questions" : theBigArray
-                } // endRequestItems
-            } // end params
+        // RE-DEFINE PARAMS prior to calling printOut (now analytics)
 
             // STEP Chunk it out and send it
             theLength = theBigArray.length;
@@ -61,6 +62,13 @@ parser.parse().then((items) => {
                 startWith = 0;
                 endWith = theLength-1;
                 console.log('we are at CASE 1');
+
+                params = {
+                    RequestItems: {
+                      "admr_questions" : theBigArray
+                              } // endRequestItems
+                          } // end params
+
                 printOut(startWith,endWith,()=>{ // call templates.js as a mod export here
                     console.log ('started: ',startWith);
                     console.log('ended: ',endWith);
@@ -74,7 +82,15 @@ parser.parse().then((items) => {
                 endWith = theChunk;
                 console.log('we are at case 2');
             for(var x=0;x<parseInt(theLength/theChunk);x++){
-                    printOut(startWith,endWith-1,()=>{
+
+                params = {
+                    RequestItems: {
+                      "admr_questions" : theBigArray.slice(startWith,endWith)
+                              } // endRequestItems
+                          } // end params
+
+                    printOut(startWith,endWith,()=>{
+                    //printOut(startWith,endWith-1,()=>{
                         startWith = startWith+theChunk;
                         endWith = endWith+theChunk;
                     }) // end printOut
@@ -83,9 +99,17 @@ parser.parse().then((items) => {
             
             // CASE 3: Send the remainder
             if(theLength > theChunk && theRemainder > 0){
+
                 console.log('sending the remainder');
                 remainderStart = theLength-theRemainder;
                 remainderEnd = theLength-1;
+
+                params = {
+                    RequestItems: {
+                      "admr_questions" : theBigArray.slice(startWith,endWith)
+                              } // endRequestItems
+                          } // end params
+                          
                 printOut(remainderStart,remainderEnd,()=>{
                     //console.log('all done remainder')
                 }) // end printOut
