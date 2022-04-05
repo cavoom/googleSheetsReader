@@ -76,7 +76,7 @@ function buildIt(items, callback){
   numRecords = items.length;
   console.log('number of items: ', numRecords);
 
-  for(i=330;i<350;i++){
+  for(i=330;i<348;i++){
 
     if(!items[i].uniqueID){
          
