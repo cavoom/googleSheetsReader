@@ -53,8 +53,9 @@ parser.parse().then((items) => {
                       "admr_questions" : theBigArray
                               } // endRequestItems
                           } // end params
-
-                printOut(startWith,endWith,()=>{ // call templates.js as a mod export here
+                
+                analytics(params,()=>{
+                //printOut(startWith,endWith,()=>{ // call templates.js as a mod export here
                     console.log ('started: ',startWith);
                     console.log('ended: ',endWith);
                     //console.log('all done')
@@ -75,8 +76,9 @@ parser.parse().then((items) => {
                       "admr_questions" : theBigArray.slice(startWith,endWith)
                               } // endRequestItems
                           } // end params
-
-                    printOut(startWith,endWith,()=>{
+                    
+                    analytics(params,()=>{
+                    //printOut(startWith,endWith,()=>{
                     //printOut(startWith,endWith-1,()=>{
                         startWith = startWith+theChunk;
                         endWith = endWith+theChunk;
@@ -93,11 +95,12 @@ parser.parse().then((items) => {
 
                 params = {
                     RequestItems: {
-                      "admr_questions" : theBigArray.slice(startWith,endWith)
+                      "admr_questions" : theBigArray.slice(remainderStart,remainderEnd)
                               } // endRequestItems
                           } // end params
 
-                printOut(remainderStart,remainderEnd,()=>{
+                          analytics(params,()=>{
+                          //printOut(remainderStart,remainderEnd,()=>{
                     //console.log('all done remainder')
                 }) // end printOut
             }
