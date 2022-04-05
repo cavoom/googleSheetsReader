@@ -42,7 +42,7 @@ parser.parse().then((items) => {
     }
 
     // Now send to DynamoDB for save
-    analytics(items, (stuff)=>{
+    analytics(params, (stuff)=>{
       console.log('all done analytics with:',stuff);
       callback(null, stuff);
           }); // end analytics
@@ -54,7 +54,7 @@ parser.parse().then((items) => {
 } // end handler
 
 // DYNAMO Batchwrite function
-function analytics(items, callback){
+function analytics(params, callback){
 
 ddb.batchWriteItem(params, function(err, data) {
   if (err) {
@@ -76,7 +76,7 @@ function buildIt(items, callback){
   numRecords = items.length;
   console.log('number of items: ', numRecords);
 
-  for(i=340;i<348;i++){
+  for(i=330;i<350;i++){
 
     if(!items[i].uniqueID){
          

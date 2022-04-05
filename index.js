@@ -38,21 +38,6 @@ parser.parse().then((items) => {
   // STEP 2: Build the object to send
   buildIt(items,(theBigArray)=>{
     //console.log('full item', theBigArray[0].PutRequest.Item);
-    //console.log('the big Array in build it: ',theBigArray.length);
-    // Now build params for DynamoDB Batch upload
-    // params = {
-    //   RequestItems: {
-    //     "admr_questions" : theBigArray
-    //             } // endRequestItems
-    //         } // end params
-
-
-        // $$$$$$$$$$ NEED TO SLICE THE BIGARRY HERE $$$$$$$$$$
-        // and then send params with the SLICE
-        // don't worry about sending startWith, endWith - just sent params
-        // var chunkToSend = theBigArray.slice(startWith,endWith)
-        // will include start with, will not include endWith
-        // RE-DEFINE PARAMS prior to calling printOut (now analytics)
 
             // STEP Chunk it out and send it
             theLength = theBigArray.length;
@@ -80,9 +65,11 @@ parser.parse().then((items) => {
             if(theLength > theChunk){
                 startWith = 0;
                 endWith = theChunk;
-                console.log('we are at case 2');
-            for(var x=0;x<parseInt(theLength/theChunk);x++){
 
+                console.log('we are at case 2');
+
+            for(var x=0;x<parseInt(theLength/theChunk);x++){
+ 
                 params = {
                     RequestItems: {
                       "admr_questions" : theBigArray.slice(startWith,endWith)
@@ -109,7 +96,7 @@ parser.parse().then((items) => {
                       "admr_questions" : theBigArray.slice(startWith,endWith)
                               } // endRequestItems
                           } // end params
-                          
+
                 printOut(remainderStart,remainderEnd,()=>{
                     //console.log('all done remainder')
                 }) // end printOut
@@ -123,7 +110,7 @@ function buildIt(items, callback){
     var i = 0;
     var tempObject = {};
     numRecords = items.length;
-    console.log('number of items in build it: ', numRecords);
+    console.log('function buildIt: ', numRecords);
   
     for(i=0;i<numRecords;i++){
   
@@ -179,12 +166,17 @@ function buildIt(items, callback){
     }
 
 // ********* SIMULATE SEND TO DYNAMO FUNCTION *********
-//function printOut(startWith,endWith,callback){
-    // setTimeout(() => {
-    //     console.log('from fn: ',startWith,endWith);
-    //     }, 800);
-    // DYNAMO Batchwrite function
-function analytics(items, callback){
+function printOut(startWith,endWith,callback){
+    setTimeout(() => {
+        console.log('** printout fn: ',startWith,endWith);
+        
+        }, 800);
+        callback() 
+    }
+
+
+// ********** SEND to DYNAMO BATCH WRITE ****************
+function analytics(params, callback){
 
     ddb.batchWriteItem(params, function(err, data) {
       if (err) {
