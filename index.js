@@ -25,7 +25,11 @@ AWS.config.update({region: 'us-east-1'});
 
 // Create the DynamoDB service object
 var ddb = new AWS.DynamoDB({apiVersion: '2012-08-10'});
-var params = {};
+var params = [];
+var uniqueParams = [];
+var remainderParams = {};
+
+//var params = [];
 var numRecords = 0;
 var theBigArray = [];
 
@@ -37,24 +41,27 @@ parser.parse().then((items) => {
 
   // STEP 2: Build the object to send
   buildIt(items,(theBigArray)=>{
-    //console.log('full item', theBigArray[0].PutRequest.Item);
+    console.log('full item 27: ', theBigArray[27].PutRequest.Item);
 
             // STEP Chunk it out and send it
             theLength = theBigArray.length;
             let theRemainder = theLength % theChunk; // returns remainder
-            // CASE 1: If theLength < theChunk to send then just send the whole thing
+           
+           
+           // CASE 1: If theLength < theChunk to send then just send the whole thing
             if(theLength <= theChunk){
                 startWith = 0;
                 endWith = theLength-1;
                 console.log('we are at CASE 1');
 
-                params = {
+                params[0] = {
                     RequestItems: {
                       "admr_questions" : theBigArray
                               } // endRequestItems
                           } // end params
+                uniqueParams = params[0];
                 
-                analytics(params,()=>{
+                analytics(uniqueParams,()=>{
                 //printOut(startWith,endWith,()=>{ // call templates.js as a mod export here
                     console.log ('started: ',startWith);
                     console.log('ended: ',endWith);
@@ -71,13 +78,15 @@ parser.parse().then((items) => {
 
             for(var x=0;x<parseInt(theLength/theChunk);x++){
  
-                params = {
+                params[x] = {
                     RequestItems: {
                       "admr_questions" : theBigArray.slice(startWith,endWith)
                               } // endRequestItems
                           } // end params
+
+                    uniqueParams = params[x];
                     
-                    analytics(params,()=>{
+                    analytics(uniqueParams,()=>{
                     //printOut(startWith,endWith,()=>{
                     //printOut(startWith,endWith-1,()=>{
                         startWith = startWith+theChunk;
@@ -93,13 +102,13 @@ parser.parse().then((items) => {
                 remainderStart = theLength-theRemainder;
                 remainderEnd = theLength-1;
 
-                params = {
+                remainderParams = {
                     RequestItems: {
                       "admr_questions" : theBigArray.slice(remainderStart,remainderEnd)
                               } // endRequestItems
                           } // end params
 
-                          analytics(params,()=>{
+                          remainderAnalytics(remainderParams,()=>{
                           //printOut(remainderStart,remainderEnd,()=>{
                     //console.log('all done remainder')
                 }) // end printOut
@@ -107,6 +116,44 @@ parser.parse().then((items) => {
     })  // end builtIt
 }) // end google sheet parser
 
+// ********** SEND to DYNAMO BATCH WRITE ****************
+function analytics(uniqueParams, callback){
+
+  //setTimeout(() => {
+    //console.log('** printout fn: ',startWith,endWith);
+    ddb.batchWriteItem(uniqueParams, function(err, data) {
+      if (err) {
+        console.log("Error", err);
+        callback(err);
+      } else {
+        console.log("Success", data);
+        callback(data)
+        }
+      })
+    //callback(data)
+  //}, 900); // end time out
+
+} // end fn
+
+
+// ********** SEND to DYNAMO BATCH WRITE ****************
+function remainderAnalytics(remainderParams, callback){
+
+  //setTimeout(() => {
+    //console.log('** printout fn: ',startWith,endWith);
+    ddb.batchWriteItem(remainderParams, function(err, data) {
+      if (err) {
+        console.log("Error", err);
+        callback(err);
+      } else {
+        console.log("Success", data);
+        callback(data)
+        }
+      })
+    //callback(data)
+  //}, 900); // end time out
+
+} // end fn
 
 // ********* BUILD THE OBJECT TO SEND TO DYNAMO *********
 function buildIt(items, callback){
@@ -178,20 +225,7 @@ function printOut(startWith,endWith,callback){
     }
 
 
-// ********** SEND to DYNAMO BATCH WRITE ****************
-function analytics(params, callback){
 
-    ddb.batchWriteItem(params, function(err, data) {
-      if (err) {
-        console.log("Error", err);
-        callback(err);
-      } else {
-        console.log("Success", data);
-        callback(data)
-        }
-      })
-    //callback(data)
-    }
 
 
     
