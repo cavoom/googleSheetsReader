@@ -1,5 +1,6 @@
 // This program sends chunks of the google sheet array, 25 at a time,
-// to dynamoDB batch save (batches of 25 or fewer can be sent)
+// to dynamoDB batch save (batches of 24 or fewer can be sent)
+// NEXT UP: Create this with export.handler so that we can run as a lambda!!
 
 // Setup for the Chunker
 //var stuffToSave = require('./stuffToSaveFile.json');
