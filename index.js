@@ -10,6 +10,15 @@
     var theChunk = 24; // This sends 25 objects at a time
     let theRemainder = 0; // returns remainder left over from chunking
     var theLength = 0;
+    var y =0;
+
+// Time and Date
+    var newTime = new Date();
+    //var timeId = newTime.getTime();
+    //var theRandom = String(Math.floor((Math.random() * 9999)));
+    //var uniqueId = timeId + theRandom;
+    var theDate = new Date();
+    theDate = theDate.toString();
 
 // Setup for Google Sheet Reader
 const PublicGoogleSheetsParser = require('public-google-sheets-parser')
@@ -41,7 +50,7 @@ parser.parse().then((items) => {
 
   // STEP 2: Build the object to send
   buildIt(items,(theBigArray)=>{
-    console.log('full item 27: ', theBigArray[27].PutRequest.Item);
+    //console.log('full item 27: ', theBigArray[27].PutRequest.Item);
 
             // STEP Chunk it out and send it
             theLength = theBigArray.length;
@@ -52,7 +61,7 @@ parser.parse().then((items) => {
             if(theLength <= theChunk){
                 startWith = 0;
                 endWith = theLength-1;
-                console.log('we are at CASE 1');
+                //console.log('we are at CASE 1');
 
                 params[0] = {
                     RequestItems: {
@@ -74,9 +83,12 @@ parser.parse().then((items) => {
                 startWith = 0;
                 endWith = theChunk;
 
-                console.log('we are at case 2');
+                //console.log('we are at case 2');
 
             for(var x=0;x<parseInt(theLength/theChunk);x++){
+              if(x>0){
+                  startWith = startWith+theChunk;
+                  endWith = endWith+theChunk};
  
                 params[x] = {
                     RequestItems: {
@@ -89,8 +101,8 @@ parser.parse().then((items) => {
                     analytics(uniqueParams,()=>{
                     //printOut(startWith,endWith,()=>{
                     //printOut(startWith,endWith-1,()=>{
-                        startWith = startWith+theChunk;
-                        endWith = endWith+theChunk;
+                        //startWith = startWith+theChunk;
+                        //endWith = endWith+theChunk;
                     }) // end printOut
                 } // end for
                 } // end if theRemainder
@@ -98,9 +110,8 @@ parser.parse().then((items) => {
             // CASE 3: Send the remainder
             if(theLength > theChunk && theRemainder > 0){
 
-                console.log('sending the remainder');
                 remainderStart = theLength-theRemainder;
-                remainderEnd = theLength-1;
+                remainderEnd = theLength+1;
 
                 remainderParams = {
                     RequestItems: {
@@ -118,9 +129,6 @@ parser.parse().then((items) => {
 
 // ********** SEND to DYNAMO BATCH WRITE ****************
 function analytics(uniqueParams, callback){
-
-  //setTimeout(() => {
-    //console.log('** printout fn: ',startWith,endWith);
     ddb.batchWriteItem(uniqueParams, function(err, data) {
       if (err) {
         console.log("Error", err);
@@ -130,9 +138,6 @@ function analytics(uniqueParams, callback){
         callback(data)
         }
       })
-    //callback(data)
-  //}, 900); // end time out
-
 } // end fn
 
 
@@ -140,7 +145,7 @@ function analytics(uniqueParams, callback){
 function remainderAnalytics(remainderParams, callback){
 
   //setTimeout(() => {
-    //console.log('** printout fn: ',startWith,endWith);
+    console.log('writing remainder');
     ddb.batchWriteItem(remainderParams, function(err, data) {
       if (err) {
         console.log("Error", err);
@@ -151,7 +156,8 @@ function remainderAnalytics(remainderParams, callback){
         }
       })
     //callback(data)
-  //}, 900); // end time out
+  //}, 2000); // end time out
+  //callback('all done')
 
 } // end fn
 
@@ -160,13 +166,11 @@ function buildIt(items, callback){
     var i = 0;
     var tempObject = {};
     numRecords = items.length;
-    console.log('function buildIt: ', numRecords);
+    //console.log('function buildIt: ', numRecords);
   
     for(i=0;i<numRecords;i++){
   
       if(!items[i].uniqueID){
-           
-      // Get a new timestamp and use that if no ID listed
         items[i].uniqueID = "no input"};
         
       if(!items[i].order){
@@ -196,6 +200,7 @@ function buildIt(items, callback){
         PutRequest: {
           Item: {
             "id": { S: items[i].uniqueID.toString()},
+            "theDate" : {S : theDate},
               "order": { S: items[i].order.toString()},
               "campaignName": { S: items[i].campaignName.toString()},
               "questionFromAlexa" : {S : items[i].questionFromAlexa.toString()},
@@ -219,7 +224,6 @@ function buildIt(items, callback){
 function printOut(startWith,endWith,callback){
     setTimeout(() => {
         console.log('** printout fn: ',startWith,endWith);
-        
         }, 800);
         callback() 
     }
