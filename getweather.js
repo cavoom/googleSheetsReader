@@ -1,4 +1,5 @@
 // Call to AWS Lambda API to get data based on theSearch
+// The Lambda fn is defined is in folder "googleAPILambda"
 // and campaignNumber coming from Google Action
 // Next step is to see if we can call this from the Google Action
 // Send it the campaignNumber and theSearch
