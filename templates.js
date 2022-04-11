@@ -1,3 +1,4 @@
+// OLD - New one does all of them 25 at a time. Use index.js
 // This one reads from ADMR templates google sheet and saves to Dynamo
 // This script reads a shared Google Sheet
 // Stores the data into DynamoDB
