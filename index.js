@@ -77,6 +77,10 @@ parser.parse().then((items) => {
                 //printOut(startWith,endWith,()=>{ // call templates.js as a mod export here
                     console.log ('started: ',startWith);
                     console.log('ended: ',endWith);
+
+                    // all done
+                    context.succeed({
+                      "results": "sent chunk less than 25"}) // end context.succeed
                     //console.log('all done')
                 })
             }
@@ -106,6 +110,12 @@ parser.parse().then((items) => {
                     //printOut(startWith,endWith-1,()=>{
                         //startWith = startWith+theChunk;
                         //endWith = endWith+theChunk;
+
+                      // all done
+                      if(theRemainder == 0){
+                      context.succeed({
+                        "results": "sent remainder"}) // end context.succeed
+                      }
                     }) // end printOut
                 } // end for
                 } // end if theRemainder
@@ -123,6 +133,10 @@ parser.parse().then((items) => {
                           } // end params
 
                           remainderAnalytics(remainderParams,()=>{
+
+                            // all done
+                            context.succeed({
+                              "results": "sent remainder"}) // end context.succeed
                           //printOut(remainderStart,remainderEnd,()=>{
                     //console.log('all done remainder')
                 }) // end printOut
