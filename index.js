@@ -43,6 +43,8 @@ var remainderParams = {};
 var numRecords = 0;
 var theBigArray = [];
 
+// MAKING THIS A LAMBDA FN
+exports.handler = function(event, context, callback) {
 
 // STEP 1: Go grab the object from the Google Sheet
 const parser = new PublicGoogleSheetsParser(spreadsheetId)
@@ -127,6 +129,10 @@ parser.parse().then((items) => {
             }
     })  // end builtIt
 }) // end google sheet parser
+
+console.log('all done lambda time!');
+
+} // END HANDLER
 
 // ********** SEND to DYNAMO BATCH WRITE ****************
 function analytics(uniqueParams, callback){
