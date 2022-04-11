@@ -2,6 +2,8 @@
 // to dynamoDB batch save (batches of 24 or fewer can be sent)
 // NEXT UP: Create this with export.handler so that we can run as a lambda!!
 
+// ****** STOPPED HERE: NEED TO UPDATE PERMISSIONS IN LAMBDA FN!!! *********
+
 // Setup for the Chunker
 //var stuffToSave = require('./stuffToSaveFile.json');
     var startWith = 0;
@@ -9,7 +11,7 @@
     var remainderStart = 0;
     var remainderEnd = 0;
     var theChunk = 24; // This sends 25 objects at a time
-    let theRemainder = 0; // returns remainder left over from chunking
+    var theRemainder = 0; // returns remainder left over from chunking
     var theLength = 0;
     var y =0;
 
@@ -55,9 +57,14 @@ parser.parse().then((items) => {
   buildIt(items,(theBigArray)=>{
     //console.log('full item 27: ', theBigArray[27].PutRequest.Item);
 
+    // for test - chop theBigArray into a small array
+    //theBigArray = theBigArray.slice(0,10);
+
+
             // STEP Chunk it out and send it
             theLength = theBigArray.length;
-            let theRemainder = theLength % theChunk; // returns remainder
+            console.log('the LENGTH: ', theLength);
+            theRemainder = theLength % theChunk; // returns remainder
            
            
            // CASE 1: If theLength < theChunk to send then just send the whole thing
@@ -90,7 +97,7 @@ parser.parse().then((items) => {
                 startWith = 0;
                 endWith = theChunk;
 
-                //console.log('we are at case 2');
+                console.log('we are at case 2 with remainder: ',theRemainder);
 
             for(var x=0;x<parseInt(theLength/theChunk);x++){
               if(x>0){
@@ -104,21 +111,16 @@ parser.parse().then((items) => {
                           } // end params
 
                     uniqueParams = params[x];
+
+                    //console.log('the remainder is: ',theRemainder);
                     
                     analytics(uniqueParams,()=>{
-                    //printOut(startWith,endWith,()=>{
-                    //printOut(startWith,endWith-1,()=>{
-                        //startWith = startWith+theChunk;
-                        //endWith = endWith+theChunk;
-
                       // all done
-                      if(theRemainder == 0){
-                      context.succeed({
-                        "results": "sent remainder"}) // end context.succeed
-                      }
+                      console.log('got back from analytics 2');
+
                     }) // end printOut
-                } // end for
-                } // end if theRemainder
+                } // end for loop
+                } // end case 2
             
             // CASE 3: Send the remainder
             if(theLength > theChunk && theRemainder > 0){
@@ -135,8 +137,8 @@ parser.parse().then((items) => {
                           remainderAnalytics(remainderParams,()=>{
 
                             // all done
-                            context.succeed({
-                              "results": "sent remainder"}) // end context.succeed
+                            console.log('all done with remainder')
+                            context.succeed({"results": "sent remainder"}) // end context.succeed
                           //printOut(remainderStart,remainderEnd,()=>{
                     //console.log('all done remainder')
                 }) // end printOut
@@ -144,12 +146,13 @@ parser.parse().then((items) => {
     })  // end builtIt
 }) // end google sheet parser
 
-console.log('all done lambda time!');
+//console.log('all done lambda time!');
 
 } // END HANDLER
 
 // ********** SEND to DYNAMO BATCH WRITE ****************
 function analytics(uniqueParams, callback){
+  console.log('in fn analytics');
     ddb.batchWriteItem(uniqueParams, function(err, data) {
       if (err) {
         console.log("Error", err);
@@ -159,14 +162,14 @@ function analytics(uniqueParams, callback){
         callback(data)
         }
       })
+    //callback('coming back from analytics')
 } // end fn
 
 
 // ********** SEND to DYNAMO BATCH WRITE ****************
 function remainderAnalytics(remainderParams, callback){
 
-  //setTimeout(() => {
-    console.log('writing remainder');
+    console.log('in fn remainder analytics');
     ddb.batchWriteItem(remainderParams, function(err, data) {
       if (err) {
         console.log("Error", err);
@@ -176,9 +179,7 @@ function remainderAnalytics(remainderParams, callback){
         callback(data)
         }
       })
-    //callback(data)
-  //}, 2000); // end time out
-  //callback('all done')
+    //callback('coming back from remainder analytics')
 
 } // end fn
 
