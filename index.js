@@ -63,6 +63,11 @@ buildIt(items,(theBigArray)=>{
         // STEP Chunk it out and send it
         theLength = theBigArray.length;
         let theRemainder = theLength % theChunk; // returns remainder
+
+        // &&&&&&&&& FOR TESTING &&&&&&&&&&&&&
+        theBigArray = theBigArray.slice(0,10);
+        theLength = theBigArray.length;
+        theRemainder = 0;
        
        
        // *** CASE 1: If theLength < theChunk to send then just send the whole thing
@@ -77,14 +82,12 @@ buildIt(items,(theBigArray)=>{
                           } // endRequestItems
                       } // end params
             uniqueParams = params[0];
+
+            await analytics(uniqueParams);
             
-            analytics(uniqueParams,()=>{
-            //printOut(startWith,endWith,()=>{ // call templates.js as a mod export here
-                //console.log ('started: ',startWith);
-                //console.log('ended: ',endWith);
-                //console.log('all done with analytics in Case 1, all done everything.');
-                //context.succeed({"results": "sent 1st batch in case 1out ... "}) // end context.succeed
-            })
+            // analytics(uniqueParams,()=>{
+            //     //context.succeed({"results": "sent 1st batch in case 1out ... "}) // end context.succeed
+            // })
         }
         
         // *** CASE 2: Send in Chunks
@@ -107,12 +110,7 @@ buildIt(items,(theBigArray)=>{
                 uniqueParams = params[x];
                 
                 analytics(uniqueParams,()=>{
-                  //console.log('sent analytics in case 2');
                   //context.succeed({"results": "sent first batch in case 2 ... "}) // end context.succeed
-                //printOut(startWith,endWith,()=>{
-                //printOut(startWith,endWith-1,()=>{
-                    //startWith = startWith+theChunk;
-                    //endWith = endWith+theChunk;
                 }) // end printOut
 
             } // end for
@@ -135,9 +133,6 @@ buildIt(items,(theBigArray)=>{
 
                       remainderAnalytics(remainderParams,()=>{
                         console.log('finished remainder analytics');
-                        
-                      //printOut(remainderStart,remainderEnd,()=>{
-                //console.log('all done remainder')
             }) // end printOut
         }
 })  // end builtIt
@@ -155,17 +150,21 @@ buildIt(items,(theBigArray)=>{
 
 
 // ********** SEND to DYNAMO BATCH WRITE ****************
-function analytics(uniqueParams, callback){
-  console.log('in analytics fn');
-ddb.batchWriteItem(uniqueParams, function(err, data) {
-  if (err) {
-    console.log("Error", err);
-    callback(err);
-  } else {
-    console.log("Success", data);
-    callback(data)
-    }
+function analytics(uniqueParams){
+  return new Promise(resolve =>{
+
+    ddb.batchWriteItem(uniqueParams, function(err, data) {
+      if (err) {
+        console.log("Error", err);
+        callback(err);
+      } else {
+        console.log("Success", data);
+        callback(data)
+        }
+      })
   })
+
+
 } // end fn
 
 
