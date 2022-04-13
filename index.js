@@ -1,9 +1,6 @@
 // This program sends chunks of the google sheet array, 25 at a time,
 // to dynamoDB batch save (batches of 24 or fewer can be sent)
-
-// NEXT UP: Need promises implemented
-// The entire for loop finishes prior to a single Dynamo batch write
-// This causes the labmda to time out
+// NEXT UP: Create this with export.handler so that we can run as a lambda!!
 
 // Setup for the Chunker
 //var stuffToSave = require('./stuffToSaveFile.json');
@@ -47,10 +44,6 @@ var numRecords = 0;
 var theBigArray = [];
 
 
-// MAKING THIS A LAMBDA FN
-//exports.handler = function(event, context, callback) {
-
-
 // STEP 1: Go grab the object from the Google Sheet
 const parser = new PublicGoogleSheetsParser(spreadsheetId)
 parser.parse().then((items) => {
@@ -63,14 +56,9 @@ buildIt(items,(theBigArray)=>{
         // STEP Chunk it out and send it
         theLength = theBigArray.length;
         let theRemainder = theLength % theChunk; // returns remainder
-
-        // &&&&&&&&& FOR TESTING &&&&&&&&&&&&&
-        theBigArray = theBigArray.slice(0,10);
-        theLength = theBigArray.length;
-        theRemainder = 0;
        
        
-       // *** CASE 1: If theLength < theChunk to send then just send the whole thing
+       // CASE 1: If theLength < theChunk to send then just send the whole thing
         if(theLength <= theChunk){
             startWith = 0;
             endWith = theLength-1;
@@ -82,18 +70,20 @@ buildIt(items,(theBigArray)=>{
                           } // endRequestItems
                       } // end params
             uniqueParams = params[0];
-
-            await analytics(uniqueParams);
             
-            // analytics(uniqueParams,()=>{
-            //     //context.succeed({"results": "sent 1st batch in case 1out ... "}) // end context.succeed
-            // })
+            analytics(uniqueParams,()=>{
+            //printOut(startWith,endWith,()=>{ // call templates.js as a mod export here
+                console.log ('started: ',startWith);
+                console.log('ended: ',endWith);
+                //console.log('all done')
+            })
         }
         
-        // *** CASE 2: Send in Chunks
+        // CASE 2: Send in Chunks
         if(theLength > theChunk){
             startWith = 0;
             endWith = theChunk;
+
             //console.log('we are at case 2');
 
         for(var x=0;x<parseInt(theLength/theChunk);x++){
@@ -110,17 +100,16 @@ buildIt(items,(theBigArray)=>{
                 uniqueParams = params[x];
                 
                 analytics(uniqueParams,()=>{
-                  //context.succeed({"results": "sent first batch in case 2 ... "}) // end context.succeed
+                //printOut(startWith,endWith,()=>{
+                //printOut(startWith,endWith-1,()=>{
+                    //startWith = startWith+theChunk;
+                    //endWith = endWith+theChunk;
                 }) // end printOut
-
             } // end for
-            //console.log('ended for loop in case 2')
             } // end if theRemainder
         
         // CASE 3: Send the remainder
         if(theLength > theChunk && theRemainder > 0){
-
-          console.log('in case 3 remainder fn');
 
             remainderStart = theLength-theRemainder;
             remainderEnd = theLength+1;
@@ -132,39 +121,24 @@ buildIt(items,(theBigArray)=>{
                       } // end params
 
                       remainderAnalytics(remainderParams,()=>{
-                        console.log('finished remainder analytics');
+                      //printOut(remainderStart,remainderEnd,()=>{
+                //console.log('all done remainder')
             }) // end printOut
         }
 })  // end builtIt
 }) // end google sheet parser
 
-// Set delay to wait
-// console.log('setting timer')
-// setTimeout(() => {
-//   console.log("all done waiting");
-//   context.succeed({"results": "sent remainder out ... "}) // end context.succeed
-// }, 2000);
-
-
-//} // END HANDLER
-
-
 // ********** SEND to DYNAMO BATCH WRITE ****************
-function analytics(uniqueParams){
-  return new Promise(resolve =>{
-
-    ddb.batchWriteItem(uniqueParams, function(err, data) {
-      if (err) {
-        console.log("Error", err);
-        callback(err);
-      } else {
-        console.log("Success", data);
-        callback(data)
-        }
-      })
+function analytics(uniqueParams, callback){
+ddb.batchWriteItem(uniqueParams, function(err, data) {
+  if (err) {
+    console.log("Error", err);
+    callback(err);
+  } else {
+    console.log("Success", data);
+    callback(data)
+    }
   })
-
-
 } // end fn
 
 
@@ -182,7 +156,9 @@ ddb.batchWriteItem(remainderParams, function(err, data) {
     callback(data)
     }
   })
-
+//callback(data)
+//}, 2000); // end time out
+//callback('all done')
 
 } // end fn
 
@@ -252,6 +228,7 @@ setTimeout(() => {
     }, 800);
     callback() 
 }
+
 
 
 
