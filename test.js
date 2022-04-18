@@ -1,13 +1,40 @@
-const PublicGoogleSheetsParser = require('public-google-sheets-parser')
-const spreadsheetId = '1aH5dtvYAYwxPML8keeznPeWSAdcT9kgzwlK6bRKWUsI';
-var testerArray = [];
+// Promise Chainging example
 
-const parser = new PublicGoogleSheetsParser(spreadsheetId)
-parser.parse().then((items) => {
-    //console.log(items);
-    testerArray.push(items);
-  if(!testerArray[0][7].order){
-    console.log('nothing is here')} else {console.log('something is here')}
-  
+new Promise(function(resolve, reject) {
 
-})
+  setTimeout(() => {
+      //console.log('delay is up on 1');
+      //console.log('now resolving ... ');
+      resolve(10)}, 
+      1000);
+
+
+}).then(function(result) {
+
+  console.log(result); // 1
+
+  return new Promise((resolve, reject) => { // (*)
+    setTimeout(() => resolve(result * 2), 1000);
+  });
+
+}).then(function(result) { // (**)
+
+  console.log(result); // 2
+
+  return new Promise((resolve, reject) => {
+    setTimeout(() => resolve(result * 2), 1000);
+  });
+
+}).then(function(result) {
+
+  console.log(result); // 4
+
+});
+
+function doStuff(resolve){
+  setTimeout(() => {
+      console.log('delay complete');
+      return(resolve)}, 
+      2000);
+}
+

@@ -3,8 +3,6 @@
 new Promise(function(resolve, reject) {
 
     setTimeout(() => {
-        console.log('delay is up on 1');
-        console.log('now resolving ... ');
         resolve(1)}, 
         1000);
   

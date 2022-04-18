@@ -1,4 +1,4 @@
-// This program sends chunks of the google sheet array, 25 at a time,
+// This lambda fn sends chunks of the google sheet array, 25 at a time,
 // to dynamoDB batch save (batches of 24 or fewer can be sent)
 // NEXT UP: Create this with export.handler so that we can run as a lambda!!
 
@@ -13,18 +13,21 @@ let theRemainder = 0; // returns remainder left over from chunking
 var theLength = 0;
 var y =0;
 
+
 // Time and Date
 var newTime = new Date();
 //var timeId = newTime.getTime();
 //var theRandom = String(Math.floor((Math.random() * 9999)));
 //var uniqueId = timeId + theRandom;
-var theDate = new Date();
-theDate = theDate.toString();
+var theDate = new Date().toLocaleString("en-US", { timeZone: "America/New_York" });
+// let nz_date_string = new Date().toLocaleString("en-US", { timeZone: "America/New_York" });
+//theDate = theDate.toString();
 
 // Setup for Google Sheet Reader
 const PublicGoogleSheetsParser = require('public-google-sheets-parser')
 const spreadsheetId = '1aH5dtvYAYwxPML8keeznPeWSAdcT9kgzwlK6bRKWUsI'; // Pulls from the Google Sheet: admrCMS
 //const spreadsheetId = '1L6nyjS7H3GNXhoS8yr7BgxD-mscso1joUC4zjJ3q2ig' // ADMR Templates file
+// const sheetName = 'Sheet1';
 //var testerArray = [];
 // https://docs.google.com/spreadsheets/d/1aH5dtvYAYwxPML8keeznPeWSAdcT9kgzwlK6bRKWUsI/edit?usp=sharing
 
@@ -43,9 +46,13 @@ var remainderParams = {};
 var numRecords = 0;
 var theBigArray = [];
 
+exports.handler = (event, context, callback) => {
+
 
 // STEP 1: Go grab the object from the Google Sheet
-const parser = new PublicGoogleSheetsParser(spreadsheetId)
+const parser = new PublicGoogleSheetsParser(spreadsheetId);
+// Pass the name of the "Sheet" to get
+//parser.parse(spreadsheetId, 'Sheet2').then((items) => {
 parser.parse().then((items) => {
 // Now that we have the items, call buildIt function to put them into an array
 
@@ -84,10 +91,13 @@ buildIt(items,(theBigArray)=>{
             startWith = 0;
             endWith = theChunk;
 
+            var theRounds = parseInt(theLength/theChunk);
+
             //console.log('we are at case 2');
 
-        for(var x=0;x<parseInt(theLength/theChunk);x++){
-          if(x>0){
+        for(var x=0;x<theRounds;x++){
+          //console.log('x=',x);
+          if(x>0){ // don't add theChunk until after the first pass
               startWith = startWith+theChunk;
               endWith = endWith+theChunk};
 
@@ -104,8 +114,18 @@ buildIt(items,(theBigArray)=>{
                 //printOut(startWith,endWith-1,()=>{
                     //startWith = startWith+theChunk;
                     //endWith = endWith+theChunk;
+
                 }) // end printOut
             } // end for
+
+            // Set a delay and wait for analytics to come back
+            // May need to adjust this delay as the dynamo write grows
+            console.log('start waiting');
+            setTimeout(()=>{
+              console.log('all done waiting');
+              context.succeed('Finished waiting and ending lambda')
+          }, 3000);
+
             } // end if theRemainder
         
         // CASE 3: Send the remainder
@@ -127,6 +147,8 @@ buildIt(items,(theBigArray)=>{
         }
 })  // end builtIt
 }) // end google sheet parser
+
+} // End Handler
 
 // ********** SEND to DYNAMO BATCH WRITE ****************
 function analytics(uniqueParams, callback){
@@ -219,14 +241,6 @@ for(i=0;i<numRecords;i++){
   } // for loop
   callback(theBigArray);
   //callback(params)
-}
-
-// ********* SIMULATE SEND TO DYNAMO FUNCTION *********
-function printOut(startWith,endWith,callback){
-setTimeout(() => {
-    console.log('** printout fn: ',startWith,endWith);
-    }, 800);
-    callback() 
 }
 
 

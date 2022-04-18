@@ -1,5 +1,5 @@
 // This script converts json to csv
-// Sends to S3 bucket
+// Sends to an S3 bucket
 
 const { Parser } = require('json2csv');
 const fields = ['name', 'phone', 'email'];
@@ -11,23 +11,39 @@ var myData = {
     "email" : "haasdp@gmail.com"
 }
 
-try {
-  const parser = new Parser(opts);
-  const csv = parser.parse(myData);
-  console.log(csv);
-} catch (err) {
-  console.error(err);
+// Convert the json file to a csv
+converter(myData,(csv)=>{
+    console.log(csv);
+    
+    // Send to S3 Bucket
+    sendToS3(csv,(stuffs)=>{
+        console.log(stuffs)
+    })
+
+    })
+
+// convert to CSV function
+function converter(myData,callback){
+    try {
+        const parser = new Parser(opts);
+        const csv = parser.parse(myData);
+        // console.log(csv);
+        callback(csv)
+      } catch (err) {
+        console.error(err);
+      }
+
 }
 
 // Now send csv to an S3 bucket or web page
 function sendToS3(csv,callback){
 var s3 = new AWS.S3();
 var params = {
-    Bucket: bucketName,
-    Key: filePath,
-    Body: csvFileContent,
+    Bucket: 'admr',
+    Key: 'https://admr.s3.amazonaws.com/testfile+-+Sheet1.csv',
+    Body: csv,
     ContentType: 'application/octet-stream',
-    ContentDisposition: contentDisposition(filePath, {
+    ContentDisposition: contentDisposition('https://admr.s3.amazonaws.com/testfile+-+Sheet1.csv', {
         type: 'inline'
     }),
     CacheControl: 'public, max-age=86400'
