@@ -51,6 +51,8 @@ exports.handler = (event, context, callback) => {
 // STEP 0: Go grab the workbook / sheet to update
 // const parserMaster = new PublicGoogleSheetsParser(spreadsheetId);
 // Maybe make parserMaster a var and change it when return?
+// Maybe just make first row the one that is set to edit?
+// If none are "On" then skip update altogether and end
 
 // STEP 1: Go grab the object from the Google Sheet to update
 const parser = new PublicGoogleSheetsParser(spreadsheetId);
