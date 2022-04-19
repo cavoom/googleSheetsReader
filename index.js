@@ -48,8 +48,11 @@ var theBigArray = [];
 
 exports.handler = (event, context, callback) => {
 
+// STEP 0: Go grab the workbook / sheet to update
+// const parserMaster = new PublicGoogleSheetsParser(spreadsheetId);
+// Maybe make parserMaster a var and change it when return?
 
-// STEP 1: Go grab the object from the Google Sheet
+// STEP 1: Go grab the object from the Google Sheet to update
 const parser = new PublicGoogleSheetsParser(spreadsheetId);
 // Pass the name of the "Sheet" to get
 //parser.parse(spreadsheetId, 'Sheet2').then((items) => {
