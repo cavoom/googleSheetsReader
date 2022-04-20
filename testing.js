@@ -46,7 +46,7 @@ var numRecords = 0;
 var theBigArray = [];
 var tempObject = {};
 
-//exports.handler = (event, context, callback) => {
+exports.handler = (event, context, callback) => {
 
 // STEP 0: Go grab the workbook / sheet to update
 // STEP 1: Go grab the object from the Google Sheet to update
@@ -135,7 +135,7 @@ parser.parse(spreadsheetId, tabId).then((items) => {
             console.log('start waiting');
             setTimeout(()=>{
               console.log('all done waiting = turn on context succeed here');
-              //context.succeed('Finished waiting and ending lambda')
+              context.succeed('Finished waiting and ending lambda')
           }, 3000);
 
             } // end if theRemainder
@@ -162,7 +162,7 @@ parser.parse(spreadsheetId, tabId).then((items) => {
 }) // end google sheet parser
 }) // end first parser
 
-//} // End Handler
+} // End Handler
 
 // ********** SEND to DYNAMO BATCH WRITE ****************
 function analytics(uniqueParams, callback){
