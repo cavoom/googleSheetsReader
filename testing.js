@@ -51,11 +51,9 @@ var tempObject = {};
 // STEP 0: Go grab the workbook / sheet to update
 // STEP 1: Go grab the object from the Google Sheet to update
 var parser = new PublicGoogleSheetsParser(spreadsheetId);
-// Pass the name of the "Sheet" to get
-//parser.parse(spreadsheetId, 'Sheet2').then((items) => {
 parser.parse(spreadsheetId, tabId).then((items) => {
     masterScan(items,(tembObject)=>{
-        console.log('found it: ',tempObject);
+        //console.log('found it: ',tempObject);
         spreadsheetId = tempObject.sheet_name;
         tabId = tempObject.tab_name;
         console.log('spreadsheet: ',spreadsheetId);
@@ -65,102 +63,103 @@ parser.parse(spreadsheetId, tabId).then((items) => {
 //var parser = new PublicGoogleSheetsParser(spreadsheetId);
 // Pass the name of the "Sheet" to get
 //parser.parse(spreadsheetId, 'Sheet2').then((items) => {
-//parser.parse(spreadsheetId, tabId).then((items) => {
+parser.parse(spreadsheetId, tabId).then((items) => {
 //parser.parse().then((items) => {
-// Now that we have the items, call buildIt function to put them into an array
+//Now that we have the items, call buildIt function to put them into an array
+  buildIt(items,(theBigArray)=>{
 
-// STEP 2: Build the object to send
+//STEP 2: Build the object to send
 
-    //console.log('full item 27: ', theBigArray[27].PutRequest.Item);
+    console.log('full item 27: ', theBigArray[27].PutRequest.Item);
 
-    //     // STEP Chunk it out and send it
-    //     theLength = theBigArray.length;
-    //     let theRemainder = theLength % theChunk; // returns remainder
+        // STEP Chunk it out and send it
+        theLength = theBigArray.length;
+        let theRemainder = theLength % theChunk; // returns remainder
        
        
-    //    // CASE 1: If theLength < theChunk to send then just send the whole thing
-    //     if(theLength <= theChunk){
-    //         startWith = 0;
-    //         endWith = theLength-1;
-    //         //console.log('we are at CASE 1');
+       // CASE 1: If theLength < theChunk to send then just send the whole thing
+        if(theLength <= theChunk){
+            startWith = 0;
+            endWith = theLength-1;
+            //console.log('we are at CASE 1');
 
-    //         params[0] = {
-    //             RequestItems: {
-    //               "admr_questions" : theBigArray
-    //                       } // endRequestItems
-    //                   } // end params
-    //         uniqueParams = params[0];
+            params[0] = {
+                RequestItems: {
+                  "admr_questions" : theBigArray
+                          } // endRequestItems
+                      } // end params
+            uniqueParams = params[0];
             
-    //         analytics(uniqueParams,()=>{
-    //         //printOut(startWith,endWith,()=>{ // call templates.js as a mod export here
-    //             console.log ('started: ',startWith);
-    //             console.log('ended: ',endWith);
-    //             //console.log('all done')
-    //         })
-    //     }
+            analytics(uniqueParams,()=>{
+            //printOut(startWith,endWith,()=>{ // call templates.js as a mod export here
+                console.log ('started: ',startWith);
+                console.log('ended: ',endWith);
+                //console.log('all done')
+            })
+        }
         
-    //     // CASE 2: Send in Chunks
-    //     if(theLength > theChunk){
-    //         startWith = 0;
-    //         endWith = theChunk;
+        // CASE 2: Send in Chunks
+        if(theLength > theChunk){
+            startWith = 0;
+            endWith = theChunk;
 
-    //         var theRounds = parseInt(theLength/theChunk);
+            var theRounds = parseInt(theLength/theChunk);
 
-    //         //console.log('we are at case 2');
+            //console.log('we are at case 2');
 
-    //     for(var x=0;x<theRounds;x++){
-    //       //console.log('x=',x);
-    //       if(x>0){ // don't add theChunk until after the first pass
-    //           startWith = startWith+theChunk;
-    //           endWith = endWith+theChunk};
+        for(var x=0;x<theRounds;x++){
+          //console.log('x=',x);
+          if(x>0){ // don't add theChunk until after the first pass
+              startWith = startWith+theChunk;
+              endWith = endWith+theChunk};
 
-    //         params[x] = {
-    //             RequestItems: {
-    //               "admr_questions" : theBigArray.slice(startWith,endWith)
-    //                       } // endRequestItems
-    //                   } // end params
+            params[x] = {
+                RequestItems: {
+                  "admr_questions" : theBigArray.slice(startWith,endWith)
+                          } // endRequestItems
+                      } // end params
 
-    //             uniqueParams = params[x];
+                uniqueParams = params[x];
                 
-    //             analytics(uniqueParams,()=>{
-    //             //printOut(startWith,endWith,()=>{
-    //             //printOut(startWith,endWith-1,()=>{
-    //                 //startWith = startWith+theChunk;
-    //                 //endWith = endWith+theChunk;
+                analytics(uniqueParams,()=>{
+                //printOut(startWith,endWith,()=>{
+                //printOut(startWith,endWith-1,()=>{
+                    //startWith = startWith+theChunk;
+                    //endWith = endWith+theChunk;
 
-    //             }) // end printOut
-    //         } // end for
+                }) // end printOut
+            } // end for
 
-    //         // Set a delay and wait for analytics to come back
-    //         // May need to adjust this delay as the dynamo write grows
-    //         console.log('start waiting');
-    //         setTimeout(()=>{
-    //           console.log('all done waiting');
-    //           context.succeed('Finished waiting and ending lambda')
-    //       }, 3000);
+            // Set a delay and wait for analytics to come back
+            // May need to adjust this delay as the dynamo write grows
+            console.log('start waiting');
+            setTimeout(()=>{
+              console.log('all done waiting = turn on context succeed here');
+              //context.succeed('Finished waiting and ending lambda')
+          }, 3000);
 
-    //         } // end if theRemainder
+            } // end if theRemainder
         
-    //     // CASE 3: Send the remainder
-    //     if(theLength > theChunk && theRemainder > 0){
+        // CASE 3: Send the remainder
+        if(theLength > theChunk && theRemainder > 0){
 
-    //         remainderStart = theLength-theRemainder;
-    //         remainderEnd = theLength+1;
+            remainderStart = theLength-theRemainder;
+            remainderEnd = theLength+1;
 
-    //         remainderParams = {
-    //             RequestItems: {
-    //               "admr_questions" : theBigArray.slice(remainderStart,remainderEnd)
-    //                       } // endRequestItems
-    //                   } // end params
+            remainderParams = {
+                RequestItems: {
+                  "admr_questions" : theBigArray.slice(remainderStart,remainderEnd)
+                          } // endRequestItems
+                      } // end params
 
-    //                   remainderAnalytics(remainderParams,()=>{
-    //                   //printOut(remainderStart,remainderEnd,()=>{
-    //             //console.log('all done remainder')
-    //         }) // end printOut
-    //     }
-    //}) // end buildIt
+                      remainderAnalytics(remainderParams,()=>{
+                      //printOut(remainderStart,remainderEnd,()=>{
+                //console.log('all done remainder')
+            }) // end printOut
+        }
+    }) // end buildIt
 })  // end MasterCan
-//}) // end google sheet parser
+}) // end google sheet parser
 }) // end first parser
 
 //} // End Handler
