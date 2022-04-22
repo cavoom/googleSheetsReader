@@ -1,6 +1,6 @@
-// Pull the worksheet to update
-// Then get the proper worksheet
-// Then send 25 at a time
+// This lambda fn sends chunks of the google sheet array, 25 at a time,
+// to dynamoDB batch save (batches of 24 or fewer can be sent)
+// NEXT UP: Create this with export.handler so that we can run as a lambda!!
 
 // Setup for the Chunker
 //var stuffToSave = require('./stuffToSaveFile.json');
@@ -25,10 +25,11 @@ var theDate = new Date().toLocaleString("en-US", { timeZone: "America/New_York" 
 
 // Setup for Google Sheet Reader
 const PublicGoogleSheetsParser = require('public-google-sheets-parser')
-var spreadsheetId = '1aH5dtvYAYwxPML8keeznPeWSAdcT9kgzwlK6bRKWUsI'; // Pulls from the Google Sheet: admrCMS
-var tabId = 'Master';
-
+const spreadsheetId = '1aH5dtvYAYwxPML8keeznPeWSAdcT9kgzwlK6bRKWUsI'; // Pulls from the Google Sheet: admrCMS
 //const spreadsheetId = '1L6nyjS7H3GNXhoS8yr7BgxD-mscso1joUC4zjJ3q2ig' // ADMR Templates file
+// const sheetName = 'Sheet1';
+//var testerArray = [];
+// https://docs.google.com/spreadsheets/d/1aH5dtvYAYwxPML8keeznPeWSAdcT9kgzwlK6bRKWUsI/edit?usp=sharing
 
 // Setup for DYNAMO
 var AWS = require('aws-sdk');
@@ -44,33 +45,25 @@ var remainderParams = {};
 //var params = [];
 var numRecords = 0;
 var theBigArray = [];
-var tempObject = {};
 
 exports.handler = (event, context, callback) => {
 
 // STEP 0: Go grab the workbook / sheet to update
-// STEP 1: Go grab the object from the Google Sheet to update
-var parser = new PublicGoogleSheetsParser(spreadsheetId);
-parser.parse(spreadsheetId, tabId).then((items) => {
-    masterScan(items,(tembObject)=>{
-        //console.log('found it: ',tempObject);
-        spreadsheetId = tempObject.sheet_name;
-        tabId = tempObject.tab_name;
-        console.log('spreadsheet: ',spreadsheetId);
-        console.log('tab name: ',tabId);
+// const parserMaster = new PublicGoogleSheetsParser(spreadsheetId);
+// Maybe make parserMaster a var and change it when return?
+// Maybe just make first row the one that is set to edit?
+// If none are "On" then skip update altogether and end
 
 // STEP 1: Go grab the object from the Google Sheet to update
-//var parser = new PublicGoogleSheetsParser(spreadsheetId);
+const parser = new PublicGoogleSheetsParser(spreadsheetId);
 // Pass the name of the "Sheet" to get
 //parser.parse(spreadsheetId, 'Sheet2').then((items) => {
-parser.parse(spreadsheetId, tabId).then((items) => {
-//parser.parse().then((items) => {
-//Now that we have the items, call buildIt function to put them into an array
-  buildIt(items,(theBigArray)=>{
+parser.parse().then((items) => {
+// Now that we have the items, call buildIt function to put them into an array
 
-//STEP 2: Build the object to send
-
-    console.log('full item 27: ', theBigArray[27].PutRequest.Item);
+// STEP 2: Build the object to send
+buildIt(items,(theBigArray)=>{
+//console.log('full item 27: ', theBigArray[27].PutRequest.Item);
 
         // STEP Chunk it out and send it
         theLength = theBigArray.length;
@@ -134,7 +127,7 @@ parser.parse(spreadsheetId, tabId).then((items) => {
             // May need to adjust this delay as the dynamo write grows
             console.log('start waiting');
             setTimeout(()=>{
-              console.log('all done waiting = turn on context succeed here');
+              console.log('all done waiting');
               context.succeed('Finished waiting and ending lambda')
           }, 3000);
 
@@ -157,10 +150,8 @@ parser.parse(spreadsheetId, tabId).then((items) => {
                 //console.log('all done remainder')
             }) // end printOut
         }
-    }) // end buildIt
-})  // end MasterCan
+})  // end builtIt
 }) // end google sheet parser
-}) // end first parser
 
 } // End Handler
 
@@ -198,21 +189,6 @@ ddb.batchWriteItem(remainderParams, function(err, data) {
 
 } // end fn
 
-// ********* FIND THE SHEET TO PULL FROM MASTER *********
-function masterScan(items,callback){
-    var i = 0;
-    numRecords = items.length;
-    
-    for(i=0;i<numRecords;i++){
-        if(items[i]){
-        if(items[i].update_sheet == "On"){
-            //console.log(items[i])
-            tempObject = items[i];
-        }
-    } // end if
-    }
-    callback(tempObject)
-}
 // ********* BUILD THE OBJECT TO SEND TO DYNAMO *********
 function buildIt(items, callback){
 var i = 0;
