@@ -1,8 +1,6 @@
 // Pull the worksheet to update
 // Then get the proper worksheet
 // Then send 25 at a time
-// Use the github 'working' branch instead of 'Main'
-
 
 // Setup for the Chunker
 //var stuffToSave = require('./stuffToSaveFile.json');
