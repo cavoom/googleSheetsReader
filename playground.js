@@ -17,6 +17,7 @@ var someTestData = [
 	}
 	
 ];
+//
 
 // var theLength = someTestData.length;
 // console.log('the Length: ', theLength);

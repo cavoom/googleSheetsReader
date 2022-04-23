@@ -1,6 +1,6 @@
 let nz_date_string = new Date().toLocaleString("en-US", { timeZone: "America/New_York" });
 console.log(nz_date_string);
-
+//
 // Date object initialized from the above datetime string
 let date_nz = new Date(nz_date_string);
 

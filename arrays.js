@@ -1,4 +1,5 @@
 // see if we can make two arrays equal by assignment
+//
 var params = [];
 var startWith = 0;
 var endWith = 24;

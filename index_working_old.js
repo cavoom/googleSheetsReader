@@ -12,7 +12,7 @@ var theChunk = 24; // This sends 25 objects at a time
 let theRemainder = 0; // returns remainder left over from chunking
 var theLength = 0;
 var y =0;
-
+//
 
 // Time and Date
 var newTime = new Date();

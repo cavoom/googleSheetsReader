@@ -9,5 +9,6 @@
 // console.log(fastDecode('%ab')) // null
 
 // console.log(fastDecode('1&the%20dogs%20are%20in%20the%20house'));
+//
 
 console.log(decodeURI('1&the%20dogs%20are%20in%20the%20house'));

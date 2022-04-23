@@ -3,7 +3,7 @@
 // This script reads a shared Google Sheet
 // Stores the data into DynamoDB
 // Go to line 98 to do 25 (max right now, at a time)
-
+//
 const PublicGoogleSheetsParser = require('public-google-sheets-parser')
 const spreadsheetId = '1aH5dtvYAYwxPML8keeznPeWSAdcT9kgzwlK6bRKWUsI'; // Pulls from the Google Sheet: admrCMS
 //const spreadsheetId = '1L6nyjS7H3GNXhoS8yr7BgxD-mscso1joUC4zjJ3q2ig' // ADMR Templates file
