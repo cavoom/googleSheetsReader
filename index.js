@@ -1,7 +1,8 @@
 // Pull the worksheet to update
 // Then get the proper worksheet
 // Then send 25 at a time
-// Working - this is the latest and greatest
+// On git branch = 'working' not 'main'
+
 
 
 
