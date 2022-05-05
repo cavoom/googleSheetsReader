@@ -2,9 +2,8 @@
 // Then get the proper worksheet
 // Then send 25 at a time
 // On git branch = 'working' not 'main'
-
-
-
+// Have a delay to deal with waiting for batch write
+// Delay won't work on local testing / but will on lambda
 
 // Setup for the Chunker
 //var stuffToSave = require('./stuffToSaveFile.json');
@@ -56,8 +55,12 @@ exports.handler = (event, context, callback) => {
 // STEP 1: Go grab the object from the Google Sheet to update
 var parser = new PublicGoogleSheetsParser(spreadsheetId);
 parser.parse(spreadsheetId, tabId).then((items) => {
-    masterScan(items,(tembObject)=>{
-        //console.log('found it: ',tempObject);
+    masterScan(items,(tempObject)=>{
+        if(Object.keys(tempObject).length === 0){
+          //console.log('NOTHING FOUND TO UPDATE!');
+          context.succeed('Nothing to Convert!')
+        }
+        
         spreadsheetId = tempObject.sheet_name;
         tabId = tempObject.tab_name;
         console.log('spreadsheet: ',spreadsheetId);
@@ -74,7 +77,7 @@ parser.parse(spreadsheetId, tabId).then((items) => {
 
 //STEP 2: Build the object to send
 
-    console.log('full item 27: ', theBigArray[27].PutRequest.Item);
+    //console.log('full item 27: ', theBigArray[27].PutRequest.Item);
 
         // STEP Chunk it out and send it
         theLength = theBigArray.length;
@@ -98,7 +101,7 @@ parser.parse(spreadsheetId, tabId).then((items) => {
             //printOut(startWith,endWith,()=>{ // call templates.js as a mod export here
                 console.log ('started: ',startWith);
                 console.log('ended: ',endWith);
-                //console.log('all done')
+                context.succeed('All done - Case 1')
             })
         }
         
@@ -138,7 +141,7 @@ parser.parse(spreadsheetId, tabId).then((items) => {
             // May need to adjust this delay as the dynamo write grows
             console.log('start waiting');
             setTimeout(()=>{
-              console.log('all done waiting = turn on context succeed here');
+              console.log('all done waiting for the update to write to batch Dynamo');
               context.succeed('Finished waiting and ending lambda')
           }, 3000);
 
@@ -158,7 +161,7 @@ parser.parse(spreadsheetId, tabId).then((items) => {
 
                       remainderAnalytics(remainderParams,()=>{
                       //printOut(remainderStart,remainderEnd,()=>{
-                //console.log('all done remainder')
+                console.log('remainder items:',remainderStart,remainderEnd);
             }) // end printOut
         }
     }) // end buildIt
@@ -192,7 +195,7 @@ ddb.batchWriteItem(remainderParams, function(err, data) {
     console.log("Error", err);
     callback(err);
   } else {
-    console.log("Success", data);
+    console.log("REMAINDER Success", data);
     callback(data)
     }
   })
@@ -206,6 +209,7 @@ ddb.batchWriteItem(remainderParams, function(err, data) {
 function masterScan(items,callback){
     var i = 0;
     numRecords = items.length;
+    //console.log('at masterScan with numRecords=',numRecords);
     
     for(i=0;i<numRecords;i++){
         if(items[i]){
