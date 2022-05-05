@@ -1,4 +1,4 @@
-// PULLS THE FIRST UPDATED TAB
+// UPDATES THE FIRST WORKSHEET TAB THAT IS SET TO ON
 
 // Pull the worksheet to update
 // Then get the proper worksheet
@@ -297,14 +297,3 @@ for(i=0;i<numRecords;i++){
   callback(theBigArray);
   //callback(params)
 }
-
-
-
-
-
-    
-
-    
-    
-    
-    

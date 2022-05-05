@@ -1,4 +1,4 @@
-// PULLS THE FIRST UPDATED TAB
+// PULLS THE 3RD UPDATED TAB
 
 // Pull the worksheet to update
 // Then get the proper worksheet
@@ -60,7 +60,7 @@ var tempObject = {};
 // MasterScan function updater
 var arrayOfTabs = [];
 // This one gets the second one to update!
-const tabToUpdate = 0; // Tab to process - value can be 0 to 4 (5 processes setup) 
+const tabToUpdate = 2; // Tab to process - value can be 0 to 4 (5 processes setup) 
 
 exports.handler = (event, context, callback) => {
 
@@ -297,14 +297,3 @@ for(i=0;i<numRecords;i++){
   callback(theBigArray);
   //callback(params)
 }
-
-
-
-
-
-    
-
-    
-    
-    
-    
