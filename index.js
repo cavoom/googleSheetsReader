@@ -16,6 +16,9 @@ let theRemainder = 0; // returns remainder left over from chunking
 var theLength = 0;
 var y =0;
 
+// Tab to update
+const tabToUpdate = 34567;
+
 
 // Time and Date
 var newTime = new Date();
@@ -56,6 +59,7 @@ exports.handler = (event, context, callback) => {
 var parser = new PublicGoogleSheetsParser(spreadsheetId);
 parser.parse(spreadsheetId, tabId).then((items) => {
     masterScan(items,(tempObject)=>{
+      console.log('tempObject:', tempObject);
         if(Object.keys(tempObject).length === 0){
           //console.log('NOTHING FOUND TO UPDATE!');
           context.succeed('Nothing to Convert!')
@@ -213,7 +217,8 @@ function masterScan(items,callback){
     
     for(i=0;i<numRecords;i++){
         if(items[i]){
-        if(items[i].update_sheet == "On"){
+        if(items[i].update_sheet == "On" && items[i].tab_name == tabToUpdate){ // This would only create tempObject for a specific sheet
+        //if(items[i].update_sheet == "On"){
             //console.log(items[i])
             tempObject = items[i];
         }
