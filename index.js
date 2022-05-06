@@ -59,7 +59,8 @@ var tempObject = {};
 
 // MasterScan function updater
 var arrayOfTabs = [];
-// This one gets the second one to update!
+
+// ************ This defines which worksheet tab to pull ****************
 const tabToUpdate = 0; // Tab to process - value can be 0 to 4 (5 processes setup) 
 
 exports.handler = (event, context, callback) => {
