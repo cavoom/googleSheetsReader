@@ -1,4 +1,4 @@
-// PULLS THE FIRST UPDATED TAB
+// PULLS THE nth UPDATED TAB (Line 63 defines)
 
 // Pull the worksheet to update
 // Then get the proper worksheet
@@ -75,14 +75,15 @@ parser.parse(spreadsheetId, tabId).then((items) => {
             if(arrayOfTabs.length < tabToUpdate+1){
           //console.log('NOTHING FOUND TO UPDATE!');
           context.succeed('Nothing to Convert!')
-        }
-        // This process always grabs the first sheet to update
-        // Other processes will grab the other ones
-        // Each process designed for one update
-        spreadsheetId = arrayOfTabs[tabToUpdate].sheet_name;
-        tabId = arrayOfTabs[tabToUpdate].tab_name;
-        console.log('spreadsheet: ',spreadsheetId);
-        console.log('tab name: ',tabId);
+          } else {
+            // This process always grabs the first sheet to update
+            // Other processes will grab the other ones
+            // Each process designed for one update
+            spreadsheetId = arrayOfTabs[tabToUpdate].sheet_name;
+            tabId = arrayOfTabs[tabToUpdate].tab_name;
+            console.log('spreadsheet: ',spreadsheetId);
+            console.log('tab name: ',tabId);
+          }
 
 // STEP 1: Go grab the object from the Google Sheet to update
 //var parser = new PublicGoogleSheetsParser(spreadsheetId);
