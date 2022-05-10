@@ -10,6 +10,8 @@
 
 // This is one of 5 scripts designed to update the 1st, 2nd 3rd 4th or 5th active sheet
 
+// ERROR - when running locally as it goes longer than 3 sec - works on Lambda Fn though
+
 // Setup for the Chunker
 //var stuffToSave = require('./stuffToSaveFile.json');
 var startWith = 0;
@@ -61,7 +63,7 @@ var tempObject = {};
 var arrayOfTabs = [];
 
 // ************ This defines which worksheet tab to pull ****************
-const tabToUpdate = 0; // Tab to process - value can be 0 to 4 (5 processes setup) 
+const tabToUpdate = 4; // Tab to process - value can be 0 to 4 (5 processes setup) 
 
 exports.handler = (event, context, callback) => {
 
