@@ -63,7 +63,8 @@ var tempObject = {};
 var arrayOfTabs = [];
 
 // ************ This defines which worksheet tab to pull ****************
-const tabToUpdate = 4; // Tab to process - value can be 0 to 4 (5 processes setup) 
+const tabToUpdate = 0; // Tab to process - value can be 0 to 4 (5 processes setup) 
+// ************ This defines which worksheet tab to pull ****************
 
 exports.handler = (event, context, callback) => {
 
@@ -197,10 +198,10 @@ parser.parse(spreadsheetId, tabId).then((items) => {
 function analytics(uniqueParams, callback){
 ddb.batchWriteItem(uniqueParams, function(err, data) {
   if (err) {
-    console.log("Error", err);
+    console.log("Error - something bad happened", err);
     callback(err);
   } else {
-    console.log("Success", data);
+    console.log("Success - I wrote it!", data);
     callback(data)
     }
   })
